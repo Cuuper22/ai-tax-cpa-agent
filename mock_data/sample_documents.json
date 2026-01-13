@@ -1,0 +1,17 @@
+{
+  "w2_example": {
+    "form": "W-2",
+    "employer": "Acme Corporation",
+    "ein": "98-7654321",
+    "wages": 85000,
+    "federal_withholding": 12000,
+    "social_security_wages": 85000,
+    "medicare_wages": 85000
+  },
+  "1099_misc_example": {
+    "form": "1099-MISC",
+    "payer": "Freelance Client LLC",
+    "ein": "45-6789123",
+    "nonemployee_compensation": 25000
+  }
+}

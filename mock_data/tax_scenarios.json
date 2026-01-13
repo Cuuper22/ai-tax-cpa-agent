@@ -1,0 +1,44 @@
+{
+  "scenarios": [
+    {
+      "id": "complex_audit_1",
+      "title": "Multi-State S-Corp Audit",
+      "description": "S-Corporation operating in 5 states with disputed apportionment methodology",
+      "difficulty": "very_high",
+      "entity_type": "1120S",
+      "irs_issue": "State tax apportionment and nexus determination",
+      "client_data": {
+        "business_name": "TechFlow Solutions Inc",
+        "ein": "12-3456789",
+        "revenue": 2500000,
+        "states": [
+          "CA",
+          "TX",
+          "NY",
+          "FL",
+          "WA"
+        ],
+        "employees": 45,
+        "irs_proposed_adjustment": 125000
+      }
+    },
+    {
+      "id": "international_tax",
+      "title": "Foreign Account Compliance",
+      "description": "Individual with unreported foreign accounts, FBAR and FATCA issues",
+      "difficulty": "high",
+      "entity_type": "1040",
+      "irs_issue": "Unreported foreign financial accounts",
+      "client_data": {
+        "taxpayer_name": "John Smith",
+        "ssn": "XXX-XX-1234",
+        "foreign_accounts": [
+          "Swiss Bank Account",
+          "UK Investment Account"
+        ],
+        "total_foreign_balance": 450000,
+        "years_unreported": 3
+      }
+    }
+  ]
+}
