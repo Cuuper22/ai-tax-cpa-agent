@@ -1,0 +1,81 @@
+[package]
+name = "ai-tax-cpa"
+version = "1.0.0"
+description = "Personal AI-Powered Tax CPA Application"
+authors = ["AI Tax CPA"]
+edition = "2021"
+rust-version = "1.70"
+
+[lib]
+name = "ai_tax_cpa_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Tauri core
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# HTTP client for Claude API
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Async runtime
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
+
+# Security
+argon2 = "0.5"
+zeroize = { version = "1", features = ["derive"] }
+rand = "0.8"
+base64 = "0.22"
+hex = "0.4"
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# UUID generation
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Lazy initialization
+once_cell = "1.19"
+
+# Platform-specific dependencies
+[target.'cfg(windows)'.dependencies]
+keyring = "2"
+# SQLCipher (encrypted SQLite) for Windows
+rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+# Regular SQLite for Android (Android has OS-level encryption and app sandboxing)
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

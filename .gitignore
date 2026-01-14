@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Rust/Cargo
+src-tauri/target/
+**/*.rs.bk
+Cargo.lock
+
+# Android build artifacts
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/build/
+src-tauri/gen/android/app/build/
+src-tauri/gen/android/app/.cxx/
+src-tauri/gen/android/local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# iOS build artifacts
+src-tauri/gen/apple/build/
+*.xcuserdata
+*.xcworkspace
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build scripts (not needed in repo)
+android-setup.ps1
+accept-licenses.ps1
+install-sdk.ps1
+android-init.ps1
+android-build.ps1
