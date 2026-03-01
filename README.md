@@ -1,3 +1,13 @@
+## Why
+
+Most "AI tax" demos are vibes. Ask it to calculate your taxes and it runs the number through a language model that confidently returns something close to correct. That's not how tax math works.
+
+The tax engine here is pure Python with `Decimal` precision and real 2024 IRS brackets — all four filing statuses, progressive calculation through each bracket boundary, standard vs. itemized deduction comparison, TCJA corporate flat rate. No language model touches the arithmetic. When the IRS says the single filer 22% bracket starts at $47,150, that's a `Decimal("47150")` in the code, not a number the AI remembered from training data.
+
+The AI layer (Claude) only handles the parts where deterministic code can't help: reading W-2 images, extracting structured data from 1099s, generating audit defense strategies with specific IRC section citations, and having a conversation about whether your home office deduction will survive scrutiny.
+
+42 tests verify the tax engine independently of the AI. The math is the math. The judgment calls are where the model earns its keep.
+
 # AI Tax CPA Agent
 
 FastAPI backend that does real federal tax calculations using 2024 IRS brackets, plus AI-powered document analysis and audit defense via Claude.
