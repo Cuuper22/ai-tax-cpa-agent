@@ -1,7 +1,3 @@
-## Why
-
-Tax prep software either charges $200+ for basic calculations or gets the math wrong. I wanted to see how far you could get with an AI agent that uses actual IRS brackets (Decimal precision, not floating point) combined with Claude for document understanding and audit strategy. The tax engine is real; the AI layer is a demo of what's possible.
-
 # AI Tax CPA Agent
 
 FastAPI backend that does real federal tax calculations using 2024 IRS brackets, plus AI-powered document analysis and audit defense via Claude.
