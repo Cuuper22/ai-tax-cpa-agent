@@ -3,7 +3,7 @@ Tax Preparation AI Agent
 Handles complex tax return preparation across all entity types
 """
 import anthropic
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import os
 import json
 from decimal import Decimal

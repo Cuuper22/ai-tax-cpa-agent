@@ -2,10 +2,12 @@
 AI Tax CPA Agent - Production API
 FastAPI backend with real tax calculations and proper security
 """
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Dict, List, Any, Optional
 from decimal import Decimal
 import os
@@ -18,16 +20,30 @@ from app.tax_engine.tax_calculator import TaxCalculator, FilingStatus
 from app.agents.tax_prep_agent import TaxPreparationAgent
 from app.agents.audit_agent import AuditDefenseAgent
 from app.agents.document_agent import DocumentAnalysisAgent
+from app.agents.voice_agent import VoiceAgent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown lifecycle"""
+    logger.info("=" * 60)
+    logger.info("AI Tax CPA Agent API - Starting")
+    logger.info("=" * 60)
+    logger.info(f"ANTHROPIC_API_KEY configured: {bool(os.getenv('ANTHROPIC_API_KEY'))}")
+    logger.info(f"Environment: {os.getenv('APP_ENV', 'development')}")
+    logger.info("=" * 60)
+    yield
+
+
 # Initialize FastAPI app
 app = FastAPI(
     title="AI Tax CPA Agent",
     version="1.0.0",
-    description="Production-ready AI tax preparation and CPA services (Demo/Educational)"
+    description="Production-ready AI tax preparation and CPA services (Demo/Educational)",
+    lifespan=lifespan,
 )
 
 # CORS middleware
@@ -109,7 +125,8 @@ class TaxReturnRequest(BaseModel):
     )
     dependents: int = Field(default=0, ge=0, description="Number of dependents")
 
-    @validator("gross_income")
+    @field_validator("gross_income")
+    @classmethod
     def validate_gross_income(cls, v):
         if v < 0:
             raise ValueError("Gross income cannot be negative")
@@ -117,7 +134,8 @@ class TaxReturnRequest(BaseModel):
             raise ValueError("Gross income exceeds reasonable limit")
         return v
 
-    @validator("filing_status")
+    @field_validator("filing_status")
+    @classmethod
     def validate_filing_status(cls, v):
         valid_statuses = ["single", "married_joint", "married_separate", "head_of_household"]
         if v.lower() not in valid_statuses:
@@ -136,6 +154,20 @@ class AuditDefenseRequest(BaseModel):
     """Request model for audit defense"""
     notice_text: str = Field(..., min_length=10, description="IRS audit notice text")
     client_documents: Dict[str, Any] = Field(default_factory=dict, description="Available client documents")
+
+
+class QuarterlyEstimateRequest(BaseModel):
+    """Request model for quarterly tax estimate"""
+    estimated_annual_income: float = Field(..., gt=0, description="Estimated annual income")
+    filing_status: str = Field(..., description="Filing status")
+    withholding_to_date: float = Field(default=0, ge=0, description="Tax already withheld")
+
+
+class VoiceChatRequest(BaseModel):
+    """Request model for voice agent text chat"""
+    message: str = Field(..., min_length=1, max_length=2000, description="User message text")
+    session_id: Optional[str] = Field(None, description="Session ID for conversation continuity")
+    context: Dict[str, Any] = Field(default_factory=dict, description="Conversation context")
 
 
 # ============================================================================
@@ -207,6 +239,8 @@ async def calculate_tax(request: TaxReturnRequest):
             "timestamp": datetime.utcnow().isoformat(),
         }
 
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.error(f"Validation error in tax calculation: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -220,19 +254,15 @@ async def calculate_tax(request: TaxReturnRequest):
 
 
 @app.post("/api/tax/quarterly")
-async def estimate_quarterly(
-    estimated_annual_income: float = Field(..., gt=0),
-    filing_status: str = Field(...),
-    withholding_to_date: float = Field(default=0, ge=0)
-):
+async def estimate_quarterly(request: QuarterlyEstimateRequest):
     """Estimate quarterly tax payments"""
     try:
         calculator = TaxCalculator(tax_year=2024)
 
         result = calculator.estimate_quarterly_payments(
-            estimated_annual_income=Decimal(str(estimated_annual_income)),
-            filing_status=filing_status,
-            withholding_to_date=Decimal(str(withholding_to_date)),
+            estimated_annual_income=Decimal(str(request.estimated_annual_income)),
+            filing_status=request.filing_status,
+            withholding_to_date=Decimal(str(request.withholding_to_date)),
         )
 
         return {
@@ -336,41 +366,61 @@ async def analyze_audit(request: AuditDefenseRequest):
 
 
 # ============================================================================
-# VOICE AGENT ENDPOINTS (NOT IMPLEMENTED)
+# VOICE AGENT ENDPOINTS (Text-based chat implemented, audio not implemented)
 # ============================================================================
 
 @app.post("/api/voice/chat")
-async def voice_chat():
+async def voice_chat(request: VoiceChatRequest):
     """
-    Voice agent endpoint - NOT IMPLEMENTED
+    Voice agent text chat — AI CPA conversation via text
 
-    This is a placeholder for future voice communication features.
-    Real implementation would require:
-    - Speech-to-text integration (e.g., OpenAI Whisper)
-    - Text-to-speech integration (e.g., ElevenLabs)
-    - Real-time conversation management
+    Supports persistent conversation history per session.
+    Audio/speech features require external STT/TTS services (not implemented).
     """
-    raise HTTPException(
-        status_code=501,
-        detail={
-            "error": "Not Implemented",
-            "message": "Voice agent feature is not yet implemented. This is a demo placeholder.",
-            "status": "coming_soon"
+    try:
+        if not os.getenv("ANTHROPIC_API_KEY"):
+            raise HTTPException(
+                status_code=503,
+                detail="AI service not configured. Please set ANTHROPIC_API_KEY environment variable."
+            )
+
+        agent = VoiceAgent(session_id=request.session_id)
+
+        result = await agent.handle_live_conversation(
+            user_message=request.message,
+            context=request.context,
+        )
+
+        return {
+            "success": True,
+            "data": result,
+            "session_id": agent.session_id,
+            "disclaimer": TaxCalculator.LEGAL_DISCLAIMER.strip(),
+            "timestamp": datetime.utcnow().isoformat(),
         }
-    )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in voice chat: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred during the conversation. Please try again."
+        )
 
 
 @app.websocket("/ws/voice")
 async def voice_websocket(websocket: WebSocket):
     """
-    Voice WebSocket endpoint - NOT IMPLEMENTED
+    Voice WebSocket endpoint — NOT IMPLEMENTED (requires STT/TTS services)
 
-    Placeholder for real-time voice communication.
+    Real-time audio streaming requires OpenAI Whisper + ElevenLabs integration.
+    Use /api/voice/chat for text-based CPA conversations instead.
     """
     await websocket.accept()
     await websocket.send_json({
         "error": "Not Implemented",
-        "message": "Voice WebSocket is not yet implemented. This is a demo placeholder."
+        "message": "Audio WebSocket requires STT/TTS services. Use /api/voice/chat for text-based conversations."
     })
     await websocket.close()
 
@@ -393,21 +443,6 @@ async def global_exception_handler(request: Request, exc: Exception):
             "timestamp": datetime.utcnow().isoformat(),
         }
     )
-
-
-# ============================================================================
-# STARTUP
-# ============================================================================
-
-@app.on_event("startup")
-async def startup_event():
-    """Log startup info"""
-    logger.info("=" * 60)
-    logger.info("AI Tax CPA Agent API - Starting")
-    logger.info("=" * 60)
-    logger.info(f"ANTHROPIC_API_KEY configured: {bool(os.getenv('ANTHROPIC_API_KEY'))}")
-    logger.info(f"Environment: {os.getenv('APP_ENV', 'development')}")
-    logger.info("=" * 60)
 
 
 if __name__ == "__main__":
