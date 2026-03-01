@@ -3,18 +3,34 @@ Voice Communication Agent
 Handles realistic voice conversations with IRS simulation
 """
 import anthropic
-from typing import Dict, List, Any, AsyncIterator
+from typing import Dict, List, Any, AsyncIterator, Optional
 import os
 import json
 import asyncio
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from utils.conversation_store import ConversationStore
 
 class VoiceAgent:
     """AI agent for voice communication with natural speech patterns"""
-    
-    def __init__(self):
+
+    def __init__(self, session_id: Optional[str] = None):
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))
         self.model = "claude-sonnet-4-20250514"
+        self.session_id = session_id or f"voice_{os.urandom(8).hex()}"
+        self.conversation_store = ConversationStore()
+
+        # Load existing conversation if available
         self.conversation_history = []
+        messages = self.conversation_store.get_messages(self.session_id)
+        if messages:
+            self.conversation_history = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in messages
+            ]
     
     async def generate_call_script(
         self,
@@ -60,11 +76,17 @@ Make it sound human, not robotic. Include realistic speech patterns."""
     ) -> Dict[str, Any]:
         """Handle live conversation turn with natural responses"""
         
-        # Add to conversation history
+        # Add to conversation history and persist
         self.conversation_history.append({
             "role": "user",
             "content": user_message
         })
+        self.conversation_store.save_message(
+            self.session_id,
+            "user",
+            user_message,
+            metadata={"context": context}
+        )
         
         system_prompt = f"""You are a professional CPA in a live phone conversation with the IRS.
 
@@ -92,12 +114,18 @@ Keep responses concise (2-4 sentences) to allow for natural back-and-forth."""
         )
         
         agent_response = response.content[0].text
-        
-        # Add agent response to history
+
+        # Add agent response to history and persist
         self.conversation_history.append({
             "role": "assistant",
             "content": agent_response
         })
+        self.conversation_store.save_message(
+            self.session_id,
+            "assistant",
+            agent_response,
+            metadata={"emotion": "confident"}
+        )
         
         return {
             "response_text": agent_response,
@@ -159,3 +187,6 @@ Keep response concise (2-3 sentences) for natural conversation flow."""
     def reset_conversation(self):
         """Reset conversation history for new call"""
         self.conversation_history = []
+        self.conversation_store.clear_conversation(self.session_id)
+        # Generate new session ID for next conversation
+        self.session_id = f"voice_{os.urandom(8).hex()}"
