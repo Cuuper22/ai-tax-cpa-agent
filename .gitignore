@@ -45,6 +45,7 @@ logs/
 tmp/
 temp/
 tmpclaude-*
+.claude/
 
 # Testing
 .coverage

@@ -1,3 +1,15 @@
+![Tests](https://img.shields.io/badge/tests-42-brightgreen)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688)
+![IRS](https://img.shields.io/badge/IRS-2024_brackets-red)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+# AI Tax CPA Agent
+
+FastAPI backend that does real federal tax calculations using 2024 IRS brackets, plus AI-powered document analysis and audit defense via Claude.
+
+**This is not tax advice.** It's a demo of what happens when you draw a hard line between computation and judgment. Consult an actual CPA for your taxes.
+
 ## Why
 
 Most "AI tax" demos are vibes. Ask it to calculate your taxes and it runs the number through a language model that confidently returns something close to correct. That's not how tax math works.
@@ -8,37 +20,103 @@ The AI layer (Claude) only handles the parts where deterministic code can't help
 
 42 tests verify the tax engine independently of the AI. The math is the math. The judgment calls are where the model earns its keep.
 
-# AI Tax CPA Agent
+The same question — where does computation end and judgment begin? — shows up everywhere I build. In [Erdos](https://github.com/Cuuper22/Erdos), the Lean 4 type checker is the deterministic boundary. Here, it's the bracket table.
 
-FastAPI backend that does real federal tax calculations using 2024 IRS brackets, plus AI-powered document analysis and audit defense via Claude.
+## Architecture
 
-**This is not tax advice.** It's a demo of what AI can do in the tax prep space. Consult an actual CPA for your taxes.
+```mermaid
+graph TB
+    subgraph DETERMINISTIC["Deterministic Engine (Decimal, tested)"]
+        TC[Tax Calculator] --> |progressive brackets| R1[Federal Tax]
+        TC --> |standard vs. itemized| R2[Deductions]
+        TC --> |4 filing statuses| R3[Results]
+    end
+
+    subgraph AI["AI Agents (Claude)"]
+        DA[Document Agent] --> |W-2, 1099| SD[Structured Data]
+        AA[Audit Agent] --> |IRC citations| AD[Audit Defense]
+        TP[Tax Prep Agent] --> |preparation| PP[Prep Plan]
+        VA[Voice Agent] --> |conversation| CH[CPA Chat]
+    end
+
+    SD --> TC
+    USER((User)) --> DA & TC & AA & VA
+```
+
+> The wall between Decimal math and AI judgment is architectural, not conventional. The tax engine never calls the Claude API. The agents never do arithmetic.
 
 ## What Actually Works
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Individual tax (Form 1040) | Real | Progressive brackets, all 4 filing statuses, standard + itemized deductions |
-| Corporate tax (Form 1120) | Real | 21% flat rate (TCJA) |
-| Quarterly estimates | Real | Calculates remaining liability, splits into 4 payments |
-| Document analysis (W-2, 1099) | AI | Needs `ANTHROPIC_API_KEY` — structured extraction via Claude |
-| Audit defense | AI | Generates response strategies with IRC citations |
-| Voice chat (text) | AI | Text-based CPA conversation with persistent history |
-| Voice chat (audio) | Stub | WebSocket endpoint exists but no STT/TTS integration |
+| Individual tax (Form 1040) | **Real** | Progressive brackets, all 4 filing statuses, standard + itemized |
+| Corporate tax (Form 1120) | **Real** | 21% flat rate (TCJA) |
+| Quarterly estimates | **Real** | Calculates remaining liability, splits into 4 payments |
+| Document analysis (W-2, 1099) | **AI** | Structured extraction via Claude (needs `ANTHROPIC_API_KEY`) |
+| Audit defense | **AI** | Response strategies with IRC section citations |
+| Voice chat (text) | **AI** | Text-based CPA conversation with persistent history |
+| Voice chat (audio) | **Stub** | WebSocket endpoint exists, no STT/TTS yet |
 
-The tax engine uses `Decimal` throughout for precision — no floating-point rounding surprises.
+> `Real` = deterministic code, tested, `Decimal` precision. `AI` = Claude API, judgment calls. `Stub` = endpoint exists, implementation pending.
+
+The tax engine uses `Decimal` throughout. No floating-point rounding surprises.
+
+## Demo
+
+**$75,000 single filer** (no API key needed):
+
+```bash
+curl -X POST http://localhost:8000/api/tax/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"entity_type": "1040", "gross_income": 75000, "filing_status": "single"}'
+```
+
+```json
+{
+  "entity_type": "1040",
+  "tax_year": 2024,
+  "filing_status": "single",
+  "gross_income": 75000,
+  "deduction_type": "Standard",
+  "deduction_amount": 14600,
+  "taxable_income": 60400,
+  "tax_liability": 8341.00,
+  "effective_tax_rate": 11.12,
+  "bracket_breakdown": [
+    {"rate": 10.0, "income_in_bracket": 11600, "tax_in_bracket": 1160.00},
+    {"rate": 12.0, "income_in_bracket": 35550, "tax_in_bracket": 4266.00},
+    {"rate": 22.0, "income_in_bracket": 13250, "tax_in_bracket": 2915.00}
+  ]
+}
+```
+
+Mock data included — `mock_data/tax_scenarios.json` has pre-built scenarios you can try without real tax documents.
 
 ## Quick Start
+
+**Backend** (tax calculations work without any API key):
 
 ```bash
 cd backend
 pip install -r requirements.txt
-
-# Optional: set API key for AI features
-export ANTHROPIC_API_KEY=sk-...
-
 python main.py
 # → http://localhost:8000
+```
+
+**AI features** (document analysis, audit defense, voice chat):
+
+```bash
+export ANTHROPIC_API_KEY=sk-...
+python main.py
+```
+
+**Frontend:**
+
+```bash
+cd frontend
+npm install
+npm run dev
+# → http://localhost:3000
 ```
 
 ## API
@@ -71,7 +149,7 @@ curl -X POST http://localhost:8000/api/voice/chat \
   -d '{"message": "I have a question about home office deductions"}'
 ```
 
-All responses include a legal disclaimer. Rate limited at 60 req/min per IP.
+Rate limited at 60 req/min per IP. All responses include a legal disclaimer.
 
 ## Tests
 
@@ -81,21 +159,38 @@ pytest tests/ -v
 # 42 tests — tax engine, API endpoints, conversation store
 ```
 
+The tests cover only the deterministic engine and API layer. The AI agents aren't unit-tested — you can't unit-test judgment. They're validated through the benchmarking service (`backend/app/services/benchmarking.py`), which compares AI performance against human CPA baselines across tax prep, audit defense, and research scenarios.
+
 ## Stack
 
 - **Backend:** FastAPI + Uvicorn
 - **Tax Engine:** Custom Python with real IRS 2024 brackets (`Decimal` precision)
 - **AI:** Anthropic Claude (document analysis, audit defense, voice chat)
 - **Storage:** File-based conversation history
-- **Frontend:** Next.js + Tailwind (separate `frontend/` directory)
+- **Frontend:** Next.js + Tailwind CSS + TypeScript (separate `frontend/` directory)
 
-## What's Not Here
+## Scope
 
-- No state taxes (federal only)
-- No e-filing integration
-- No real audio/speech processing
-- No multi-year planning
-- No authentication/multi-user
+This is a federal tax demo, not production tax software:
+
+- **Federal only** — no state tax calculations
+- **No e-filing** — calculates liability, doesn't submit
+- **No audio processing** — voice chat is text-only (WebSocket stub exists)
+- **No multi-year** — 2024 brackets only
+- **No multi-user** — single session, file-based storage
+
+Each of these is an intentional boundary. The demo shows the architecture — deterministic math walled off from AI judgment — not a complete tax product.
+
+## See Also
+
+The same boundary question — deterministic verification vs. AI judgment — appears in [Erdos](https://github.com/Cuuper22/Erdos), where the Lean 4 type checker is the deterministic wall. A similar question about AI restraint shows up in [jobhunter](https://github.com/Cuuper22/jobhunter), where the system drafts job applications but won't submit without human approval.
+
+## Credits
+
+- Tax brackets from [IRS Rev. Proc. 2023-34](https://www.irs.gov/irb/2023-44_IRB#REV-PROC-2023-34) (2024 tax year)
+- AI features powered by [Anthropic Claude](https://www.anthropic.com)
+- Backend: [FastAPI](https://fastapi.tiangolo.com/) + [Uvicorn](https://www.uvicorn.org/)
+- Frontend: [Next.js](https://nextjs.org/) + [Tailwind CSS](https://tailwindcss.com/)
 
 ## License
 
