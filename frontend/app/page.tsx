@@ -4,136 +4,167 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
-      <nav className="bg-black/30 backdrop-blur-lg border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">AI</span>
-              </div>
-              <h1 className="text-2xl font-bold text-white">AI Tax CPA Agent</h1>
-            </div>
-            <div className="space-x-6">
-              <Link href="/tax-prep" className="text-gray-200 hover:text-white transition">Tax Prep</Link>
-              <Link href="/audit-defense" className="text-gray-200 hover:text-white transition">Audit</Link>
-              <Link href="/voice-call" className="text-gray-200 hover:text-white transition">Voice</Link>
-              <Link href="/benchmark" className="text-gray-200 hover:text-white transition">Benchmark</Link>
-            </div>
+    <div className="min-h-screen" style={{ background: 'var(--color-bg-primary)' }}>
+      {/* Nav */}
+      <nav style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>
+              {'>'}_
+            </span>
+            <span className="font-semibold" style={{ color: 'var(--color-text-heading)' }}>
+              AI Tax CPA Agent
+            </span>
+          </div>
+          <div className="flex gap-6 text-sm">
+            <Link href="/tax-prep" className="transition-colors duration-200" style={{ color: 'var(--color-text-secondary)' }}
+              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--color-text-heading)'}
+              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--color-text-secondary)'}>
+              Tax Prep
+            </Link>
+            <Link href="/audit-defense" className="transition-colors duration-200" style={{ color: 'var(--color-text-secondary)' }}
+              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--color-text-heading)'}
+              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--color-text-secondary)'}>
+              Audit Defense
+            </Link>
+            <Link href="/voice-call" className="transition-colors duration-200" style={{ color: 'var(--color-text-secondary)' }}
+              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--color-text-heading)'}
+              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--color-text-secondary)'}>
+              Voice
+            </Link>
+            <Link href="/benchmark" className="transition-colors duration-200" style={{ color: 'var(--color-text-secondary)' }}
+              onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--color-text-heading)'}
+              onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--color-text-secondary)'}>
+              Benchmark
+            </Link>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <div className="inline-block mb-4 px-4 py-2 bg-blue-500/20 border border-blue-400/30 rounded-full">
-            <span className="text-blue-300 text-sm font-semibold">Powered by Claude Sonnet 4</span>
-          </div>
-          <h2 className="text-6xl font-extrabold text-white mb-6">
-            AI-Powered<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
-              Tax Accounting
-            </span>
-          </h2>
-          <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-            Demonstrating that professional CPA services CAN be automated.
-            Complex tax prep, IRS representation, and voice calls in seconds.
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        {/* Header — left-aligned, not centered */}
+        <div className="mb-16 max-w-2xl">
+          <p className="text-xs font-mono mb-4" style={{ color: 'var(--color-accent)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Deterministic tax math + AI judgment
           </p>
-          
-          <div className="flex justify-center space-x-4">
-            <Link href="/tax-prep" 
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all transform hover:scale-105">
-              Start Tax Prep →
+          <h1 className="text-5xl font-semibold mb-6" style={{ color: 'var(--color-text-heading)', letterSpacing: '-0.025em', lineHeight: '1.1' }}>
+            The math is the math.<br />
+            <span style={{ color: 'var(--color-text-secondary)' }}>The AI handles the rest.</span>
+          </h1>
+          <p className="text-base leading-relaxed mb-8" style={{ color: 'var(--color-text-secondary)' }}>
+            Real 2024 IRS brackets with <code className="font-mono text-sm px-1.5 py-0.5" style={{ background: 'var(--color-bg-elevated)', borderRadius: '4px', color: 'var(--color-accent-secondary)' }}>Decimal</code> precision.
+            No language model touches the arithmetic. Claude handles document analysis, audit defense, and the conversations where judgment matters.
+          </p>
+          <div className="flex gap-3">
+            <Link href="/tax-prep" className="btn-primary text-sm">
+              Calculate taxes
             </Link>
-            <Link href="/voice-call"
-              className="bg-white/10 backdrop-blur-sm text-white border border-white/20 px-8 py-4 rounded-lg font-semibold hover:bg-white/20 transition">
-              Try Voice Call
+            <Link href="/audit-defense" className="btn-ghost text-sm">
+              Audit defense
             </Link>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          <FeatureCard
-            title="Tax Preparation"
-            description="Forms 1040, 1120, 1065 with instant calculations"
-            icon="📊"
-            link="/tax-prep"
-            gradient="from-blue-500 to-cyan-500"
-          />
-          <FeatureCard
-            title="Audit Defense"
-            description="Professional IRS representation and strategy"
-            icon="🛡️"
-            link="/audit-defense"
-            gradient="from-indigo-500 to-purple-500"
-          />
-          <FeatureCard
-            title="Voice Calls"
-            description="Natural IRS phone conversations"
-            icon="📞"
-            link="/voice-call"
-            gradient="from-purple-500 to-pink-500"
-          />
-        </div>
+        {/* Bento grid */}
+        <div className="grid grid-cols-3 gap-3 mb-16">
+          {/* Feature cards */}
+          <Link href="/tax-prep" className="card p-5 group transition-colors duration-200 hover:border-[oklch(0.35_0.012_270)]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="label">Tax Engine</span>
+              <span className="badge badge-real">Real</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text-heading)' }}>
+              Form 1040 & 1120
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              Progressive brackets, all 4 filing statuses, standard + itemized deductions, TCJA corporate 21%.
+            </p>
+          </Link>
 
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-10 mb-16">
-          <h3 className="text-3xl font-bold text-white text-center mb-10">Performance Metrics</h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            <StatCard number="50x" label="Faster Processing" color="text-blue-400" />
-            <StatCard number="98%" label="Accuracy Rate" color="text-green-400" />
-            <StatCard number="24/7" label="Availability" color="text-purple-400" />
-            <StatCard number="$0.01" label="Cost per Task" color="text-yellow-400" />
+          <Link href="/audit-defense" className="card p-5 group transition-colors duration-200 hover:border-[oklch(0.35_0.012_270)]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="label">Claude</span>
+              <span className="badge badge-ai">AI</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text-heading)' }}>
+              Audit Defense
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              Response strategies with specific IRC section citations. Analyzes notices, researches tax law, drafts professional letters.
+            </p>
+          </Link>
+
+          <Link href="/voice-call" className="card p-5 group transition-colors duration-200 hover:border-[oklch(0.35_0.012_270)]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="label">Claude</span>
+              <span className="badge badge-ai">AI</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text-heading)' }}>
+              CPA Voice Chat
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              Text-based CPA conversation with persistent session history. Natural back-and-forth about deductions, filing strategies.
+            </p>
+          </Link>
+
+          {/* Wide card — architecture boundary */}
+          <div className="card p-5 col-span-2">
+            <span className="label mb-3 block">Architecture</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3" style={{ background: 'var(--color-bg-primary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+                <p className="text-xs font-mono mb-2" style={{ color: 'var(--color-success)' }}>DETERMINISTIC</p>
+                <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                  Tax Calculator &middot; Decimal precision &middot; 42 tests &middot; Progressive brackets &middot; No AI in the loop
+                </p>
+              </div>
+              <div className="p-3" style={{ background: 'var(--color-bg-primary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+                <p className="text-xs font-mono mb-2" style={{ color: 'var(--color-accent)' }}>AI JUDGMENT</p>
+                <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                  Document Agent &middot; Audit Agent &middot; Tax Prep Agent &middot; Voice Agent &middot; Claude API
+                </p>
+              </div>
+            </div>
+            <p className="text-xs mt-3" style={{ color: 'var(--color-text-secondary)' }}>
+              The tax engine never calls Claude. The agents never do arithmetic. The boundary is architectural, not conventional.
+            </p>
+          </div>
+
+          {/* Document analysis card */}
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="label">Claude Vision</span>
+              <span className="badge badge-ai">AI</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text-heading)' }}>
+              Document Analysis
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              W-2 image reading, 1099 extraction, structured data from scanned tax documents.
+            </p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-10 text-white">
-          <h3 className="text-3xl font-bold mb-6">Challenge Your CPA Friend</h3>
-          <p className="text-xl mb-6 text-blue-100">
-            Think AI cannot replace complex professional services? Run these tests:
-          </p>
-          <div className="grid md:grid-cols-2 gap-4 text-lg">
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">⚡</span>
-              <span>Prepare S-Corp return in 5 seconds</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">🎯</span>
-              <span>Generate audit defense instantly</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">💬</span>
-              <span>Handle IRS phone calls naturally</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">💰</span>
-              <span>Save 99% on labor costs</span>
-            </div>
+        {/* Stack info — compact, monospaced */}
+        <div className="card p-5 mb-16">
+          <span className="label mb-3 block">Stack</span>
+          <div className="font-mono text-sm flex flex-wrap gap-x-6 gap-y-1" style={{ color: 'var(--color-text-secondary)' }}>
+            <span>FastAPI + Uvicorn</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
+            <span>Python <span style={{ color: 'var(--color-accent-secondary)' }}>Decimal</span> tax engine</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
+            <span>Anthropic Claude</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
+            <span>Next.js + Tailwind</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
+            <span>IRS 2024 brackets</span>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
 
-function FeatureCard({ title, description, icon, link, gradient }: any) {
-  return (
-    <Link href={link}>
-      <div className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer transform hover:scale-105">
-        <div className={`text-4xl mb-4 w-16 h-16 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-          {icon}
-        </div>
-        <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
-        <p className="text-gray-300 text-sm">{description}</p>
+        {/* Footer */}
+        <footer className="text-xs pb-8" style={{ color: 'var(--color-text-secondary)' }}>
+          Not tax advice. 42 tests verify the deterministic engine. MIT License.
+        </footer>
       </div>
-    </Link>
-  )
-}
-
-function StatCard({ number, label, color }: any) {
-  return (
-    <div className="text-center">
-      <div className={`text-5xl font-bold ${color} mb-2`}>{number}</div>
-      <div className="text-gray-300">{label}</div>
     </div>
   )
 }

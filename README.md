@@ -15,9 +15,9 @@ FastAPI backend that does real federal tax calculations using 2024 IRS brackets,
 <details>
 <summary>More screenshots</summary>
 
-| Tax Preparation | Audit Defense | Voice Call |
-|:-:|:-:|:-:|
-| ![Tax Prep](docs/screenshots/tax-prep.png) | ![Audit Defense](docs/screenshots/audit-defense.png) | ![Voice Call](docs/screenshots/voice-call.png) |
+| Tax Preparation | Audit Defense | Voice Chat | Benchmark |
+|:-:|:-:|:-:|:-:|
+| ![Tax Prep](docs/screenshots/tax-prep.png) | ![Audit Defense](docs/screenshots/audit-defense.png) | ![Voice Chat](docs/screenshots/voice-call.png) | ![Benchmark](docs/screenshots/benchmark.png) |
 
 </details>
 
