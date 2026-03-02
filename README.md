@@ -10,6 +10,17 @@ FastAPI backend that does real federal tax calculations using 2024 IRS brackets,
 
 **This is not tax advice.** It's a demo of what happens when you draw a hard line between computation and judgment. Consult an actual CPA for your taxes.
 
+![Dashboard](docs/screenshots/dashboard.png)
+
+<details>
+<summary>More screenshots</summary>
+
+| Tax Preparation | Audit Defense | Voice Call |
+|:-:|:-:|:-:|
+| ![Tax Prep](docs/screenshots/tax-prep.png) | ![Audit Defense](docs/screenshots/audit-defense.png) | ![Voice Call](docs/screenshots/voice-call.png) |
+
+</details>
+
 ## Why
 
 Most "AI tax" demos are vibes. Ask it to calculate your taxes and it runs the number through a language model that confidently returns something close to correct. That's not how tax math works.
