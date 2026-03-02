@@ -6,9 +6,9 @@
 
 # AI Tax CPA Agent
 
-FastAPI backend that does real federal tax calculations using 2024 IRS brackets, plus AI-powered document analysis and audit defense via Claude.
+Federal tax engine that does real math with `Decimal` precision and 2024 IRS brackets. Claude handles the parts where code can't help — reading W-2 images, drafting audit defense letters, having a conversation about whether your home office deduction will hold up.
 
-**This is not tax advice.** It's a demo of what happens when you draw a hard line between computation and judgment. Consult an actual CPA for your taxes.
+**Not tax advice.** This is what happens when you draw a hard line between computation and judgment. Talk to an actual CPA.
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -29,9 +29,9 @@ The tax engine here is pure Python with `Decimal` precision and real 2024 IRS br
 
 The AI layer (Claude) only handles the parts where deterministic code can't help: reading W-2 images, extracting structured data from 1099s, generating audit defense strategies with specific IRC section citations, and having a conversation about whether your home office deduction will survive scrutiny.
 
-42 tests verify the tax engine independently of the AI. The math is the math. The judgment calls are where the model earns its keep.
+42 tests verify the tax engine. Zero tests verify the AI. You can't unit-test judgment — that's the whole point.
 
-The same question — where does computation end and judgment begin? — shows up everywhere I build. In [Erdos](https://github.com/Cuuper22/Erdos), the Lean 4 type checker is the deterministic boundary. Here, it's the bracket table.
+The same question keeps showing up in everything I build: where does computation end and judgment begin? In [Erdos](https://github.com/Cuuper22/Erdos), the Lean 4 type checker is the wall. Here, it's the bracket table.
 
 ## Architecture
 
@@ -170,7 +170,7 @@ pytest tests/ -v
 # 42 tests — tax engine, API endpoints, conversation store
 ```
 
-The tests cover only the deterministic engine and API layer. The AI agents aren't unit-tested — you can't unit-test judgment. They're validated through the benchmarking service (`backend/app/services/benchmarking.py`), which compares AI performance against human CPA baselines across tax prep, audit defense, and research scenarios.
+Tests cover the deterministic engine and API layer. The AI agents aren't unit-tested — they're validated through the benchmarking service (`backend/app/services/benchmarking.py`), which compares AI output against human CPA baselines. Different tool for a different kind of correctness.
 
 ## Stack
 
@@ -182,19 +182,19 @@ The tests cover only the deterministic engine and API layer. The AI agents aren'
 
 ## Scope
 
-This is a federal tax demo, not production tax software:
+This is a demo, not TurboTax:
 
-- **Federal only** — no state tax calculations
-- **No e-filing** — calculates liability, doesn't submit
-- **No audio processing** — voice chat is text-only (WebSocket stub exists)
+- **Federal only** — no state calculations
+- **No e-filing** — calculates liability, doesn't submit anything
+- **No audio** — voice chat is text-only (WebSocket stub exists for when STT/TTS arrives)
 - **No multi-year** — 2024 brackets only
 - **No multi-user** — single session, file-based storage
 
-Each of these is an intentional boundary. The demo shows the architecture — deterministic math walled off from AI judgment — not a complete tax product.
+Every boundary here is intentional. The point is the architecture — deterministic math walled off from AI judgment — not a complete tax product.
 
 ## See Also
 
-The same boundary question — deterministic verification vs. AI judgment — appears in [Erdos](https://github.com/Cuuper22/Erdos), where the Lean 4 type checker is the deterministic wall. A similar question about AI restraint shows up in [jobhunter](https://github.com/Cuuper22/jobhunter), where the system drafts job applications but won't submit without human approval.
+Same boundary question, different domains: [Erdos](https://github.com/Cuuper22/Erdos) uses the Lean 4 type checker as the deterministic wall. [jobhunter](https://github.com/Cuuper22/jobhunter) drafts job applications but won't submit without human approval. The pattern is always the same — figure out where the computer should stop and the judgment should start, then make that boundary architectural.
 
 ## Credits
 
