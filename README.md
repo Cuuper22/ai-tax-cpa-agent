@@ -1,12 +1,12 @@
+# AI Tax CPA Agent
+
 ![Tests](https://img.shields.io/badge/tests-42-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688)
 ![IRS](https://img.shields.io/badge/IRS-2024_brackets-red)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-# AI Tax CPA Agent
-
-Federal tax engine that does real math with `Decimal` precision and 2024 IRS brackets. Claude handles the parts where code can't help - reading W-2 images, drafting audit defense letters, having a conversation about whether your home office deduction will hold up.
+Demo federal tax engine with `Decimal` arithmetic, 2024 IRS brackets, and a hard architectural boundary around AI. Claude-side agents handle the judgment-shaped work - document images, audit-response drafting, and tax conversation - while the liability number comes from code you can test.
 
 **Not tax advice.** This is what happens when you draw a hard line between computation and judgment. Talk to an actual CPA.
 
