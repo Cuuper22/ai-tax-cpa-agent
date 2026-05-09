@@ -125,8 +125,8 @@ export default function BenchmarkPage() {
             </div>
           </div>
           <p className="text-xs mt-3" style={{ color: 'var(--color-text-secondary)' }}>
-            Tests cover the deterministic engine and API layer only. AI agents are validated through the benchmarking
-            service, which compares AI performance against human CPA baselines across tax prep, audit, and research.
+            Tests cover the deterministic engine and API layer only. AI agent quality is not unit-tested here; the
+            benchmarking service is a harness for recording AI and human results side by side.
           </p>
         </div>
 

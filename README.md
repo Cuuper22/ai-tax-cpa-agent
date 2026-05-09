@@ -60,7 +60,7 @@ graph TB
 
 If you are evaluating this repo, start with the boundary between deterministic code and AI judgment.
 
-1. Read `backend/app/services/tax_calculator.py`. That is the core engine: `Decimal` arithmetic, bracket traversal, deductions, corporate tax, and quarterly estimates.
+1. Read `backend/app/tax_engine/tax_calculator.py`. That is the core engine: `Decimal` arithmetic, bracket traversal, deductions, corporate tax, and quarterly estimates.
 2. Read `backend/tests/test_tax_engine.py` and `backend/tests/test_api.py` to see what gets treated as verifiable.
 3. Open `backend/app/agents/document_agent.py`, `backend/app/agents/audit_agent.py`, and `backend/app/agents/voice_agent.py` after the tax engine. The agents are intentionally outside the arithmetic path.
 4. Inspect `frontend/app/tax-prep/page.tsx`, `frontend/app/audit-defense/page.tsx`, and `frontend/app/benchmark/page.tsx` for the product surfaces.
@@ -129,7 +129,7 @@ python main.py
 **AI features** (document analysis, audit defense, voice chat):
 
 ```bash
-export ANTHROPIC_API_KEY=sk-...
+export ANTHROPIC_API_KEY="your-key-here"
 python main.py
 ```
 
@@ -137,7 +137,7 @@ python main.py
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 # → http://localhost:3000
 ```
@@ -182,7 +182,7 @@ pytest tests/ -v
 # 42 tests - tax engine, API endpoints, conversation store
 ```
 
-Tests cover the deterministic engine and API layer. The AI agents aren't unit-tested - they're validated through the benchmarking service (`backend/app/services/benchmarking.py`), which compares AI output against human CPA baselines. Different tool for a different kind of correctness.
+Tests cover the deterministic engine and API layer. The AI agents are not unit-tested in this repo. `backend/app/services/benchmarking.py` is a comparison harness that can record AI and human results; it is not evidence of CPA-grade validation by itself.
 
 ## Stack
 
