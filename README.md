@@ -206,7 +206,7 @@ Every boundary here is intentional. The point is the architecture - deterministi
 
 ## See Also
 
-Same boundary question, different domains: [Erdos](https://github.com/Cuuper22/Erdos) uses the Lean 4 type checker as the deterministic wall. [jobhunter](https://github.com/Cuuper22/jobhunter) drafts job applications but won't submit without human approval. The pattern is always the same - figure out where the computer should stop and the judgment should start, then make that boundary architectural.
+Same boundary question, different domain: [Erdos](https://github.com/Cuuper22/Erdos) uses the Lean 4 type checker as the deterministic wall. The pattern is the same - figure out where the computer should stop and the judgment should start, then make that boundary architectural.
 
 ## Credits
 
